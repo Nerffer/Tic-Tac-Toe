@@ -19,7 +19,7 @@ class Board:
             for j in range(3):
                 button = tk.Button(self.root, text = "", width = 5, height = 3, 
                             font =("Arial", 28), command = lambda i = i, j = j: click(i,j))
-                button.grid(row = i, column = j)
+                button.grid(row = i+1, column = j) # Starting from row 1, because I want to make space for the scores
                 self.buttons[i][j] = button
 
     # Updating button at (row, col) with "X" or "O"
@@ -32,8 +32,16 @@ class TicTacToe:
     def __init__(self, root):
         self.root = root
         self.current_player = "X"
+        self.player_X_score = 0
+        self.player_O_score = 0
         self.board = Board(root)
+        # Displaying scores at the top
+        self.score_label = tk.Label(root, text = f"Player X: {self.player_X_score}   Player O: {self.player_O_score}", font=("Arial", 16))
+        self.score_label.grid(row=0, column=0, columnspan=3)
         self.board.create_board(self.clicking)
+
+    def update_score(self):
+        self.score_label.config(text=f"Player X: {self.player_X_score}   Player O: {self.player_O_score}")
 
     # Switching player 1 to player 2 ("X" to "O")
     def switch_player(self):
@@ -53,6 +61,11 @@ class TicTacToe:
     def check_game_state(self):
         if self.check_winner():
             messagebox.showinfo("Game Over", f"Player {self.current_player} wins!")
+            if self.current_player == "X":
+                self.player_X_score += 1
+            else:
+                self.player_O_score += 1
+            self.update_score()
             self.reset_game()
         elif all(self.board.buttons[i][j].cget("text") != "" for i in range(3) for j in range(3)):
             messagebox.showinfo("Game Over", "It's a tie!")
